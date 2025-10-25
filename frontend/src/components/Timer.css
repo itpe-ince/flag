@@ -1,0 +1,76 @@
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  min-width: 80px;
+}
+
+.time-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  font-family: 'Courier New', monospace;
+}
+
+.timer.warning .time-text {
+  color: #f39c12;
+}
+
+.timer.critical .time-text {
+  color: #e74c3c;
+  animation: pulse 1s infinite;
+}
+
+.timer-progress {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timer-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.timer.warning .timer-progress-bar {
+  background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.timer.critical .timer-progress-bar {
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .timer-display {
+    padding: 0.5rem 1rem;
+  }
+  
+  .time-text {
+    font-size: 1.25rem;
+  }
+  
+  .timer-progress {
+    height: 6px;
+  }
+}
