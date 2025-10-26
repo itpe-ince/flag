@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flag-guessing-game
+  labels:
+    name: flag-guessing-game
+    app: flag-guessing-game

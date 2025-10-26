@@ -3,6 +3,7 @@ import { pool } from '../config/database';
 import { UserModel } from '../models';
 import { CreateUserSchema, validateData } from '../schemas/validation';
 import { ApiResponse, User, UserStats } from '../types';
+import { authenticateToken, optionalAuth } from '../middleware/auth';
 import { v4 as uuidv4 } from 'uuid';
 
 const router = Router();
@@ -69,8 +70,8 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/users/:id - Get user profile
-router.get('/:id', async (req: Request, res: Response) => {
+// GET /api/users/:id - Get user profile (optional auth for privacy)
+router.get('/:id', optionalAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     
@@ -106,8 +107,8 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/users/:id/stats - Get user statistics
-router.get('/:id/stats', async (req: Request, res: Response) => {
+// GET /api/users/:id/stats - Get user statistics (optional auth for privacy)
+router.get('/:id/stats', optionalAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     

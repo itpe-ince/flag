@@ -1,0 +1,166 @@
+# Docker Compose configuration for Flag Guessing Game
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: flag-game-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-flag_guessing_game}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - flag-game-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-flag_guessing_game}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: flag-game-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - flag-game-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: flag-game-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3501
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-flag_guessing_game}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3500}
+      CDN_BASE_URL: ${CDN_BASE_URL:-https://flagcdn.com/w320}
+    volumes:
+      - backend_logs:/app/logs
+    ports:
+      - "3501:3501"
+    networks:
+      - flag-game-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3501/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Web Server
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: flag-game-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3501/api}
+    ports:
+      - "3500:3500"
+    networks:
+      - flag-game-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3500/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Database Migration Runner (runs once)
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: build
+    container_name: flag-game-migrate
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-flag_guessing_game}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+    command: ["npm", "run", "migrate:prod"]
+    networks:
+      - flag-game-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # Flag Data Seeder (runs once)
+  seed:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: build
+    container_name: flag-game-seed
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-flag_guessing_game}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      CDN_BASE_URL: ${CDN_BASE_URL:-https://flagcdn.com/w320}
+    command: ["npm", "run", "seed:flags:prod"]
+    networks:
+      - flag-game-network
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+# Networks
+networks:
+  flag-game-network:
+    driver: bridge
+    name: flag-game-network
+
+# Volumes
+volumes:
+  postgres_data:
+    name: flag-game-postgres-data
+  redis_data:
+    name: flag-game-redis-data
+  backend_logs:
+    name: flag-game-backend-logs

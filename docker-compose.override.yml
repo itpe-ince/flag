@@ -1,0 +1,36 @@
+# Docker Compose override for development environment
+version: '3.8'
+
+services:
+  # Development backend with hot reload
+  backend:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
+  # Development frontend with hot reload
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+  # Expose database port for development tools
+  postgres:
+    ports:
+      - "5432:5432"
+
+  # Expose Redis port for development tools
+  redis:
+    ports:
+      - "6379:6379"

@@ -12,5 +12,18 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+        sw: './public/sw.js'
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'sw' ? 'sw.js' : 'assets/[name]-[hash].js'
+        }
+      }
+    }
   }
 })

@@ -1,5 +1,6 @@
 import { pool } from '../config/database';
 import { Country, FlagRow } from '../types';
+import { cdnService } from './cdn-service';
 
 /**
  * Service for managing flag data operations
@@ -311,6 +312,14 @@ export class FlagService {
   }
   
   /**
+   * Gets preload URLs for upcoming questions
+   */
+  async getPreloadUrls(excludeCodes: string[] = [], count: number = 5): Promise<string[]> {
+    const upcomingFlags = await this.getRandomFlags(count, excludeCodes);
+    return cdnService.generatePreloadUrls(upcomingFlags, count);
+  }
+  
+  /**
    * Validates that all flag image URLs are properly formatted
    */
   async validateImageUrls(): Promise<{
@@ -355,13 +364,13 @@ export class FlagService {
   }
   
   /**
-   * Maps database row to Country interface
+   * Maps database row to Country interface with CDN URL
    */
   private mapRowToCountry(row: FlagRow): Country {
     return {
       code: row.country_code,
       name: row.country_name,
-      imageUrl: row.image_url,
+      imageUrl: cdnService.generateFlagUrl(row.country_code),
       region: row.region,
       colors: row.colors || [],
       difficulty: row.difficulty_level

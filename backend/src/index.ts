@@ -9,9 +9,11 @@ import { socketAuthMiddleware, AuthenticatedSocket } from './middleware/socket-a
 import { SocketManager } from './services/socket-manager';
 
 // Import route handlers
+import authRouter from './routes/auth';
 import usersRouter from './routes/users';
 import gamesRouter from './routes/games';
 import leaderboardsRouter from './routes/leaderboards';
+import flagsRouter from './routes/flags';
 
 // Load environment variables
 dotenv.config();
@@ -53,9 +55,11 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/leaderboards', leaderboardsRouter);
+app.use('/api/flags', flagsRouter);
 
 // Basic health check endpoint
 app.get('/api/health', (_req, res) => {

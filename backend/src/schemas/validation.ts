@@ -9,6 +9,28 @@ export const CreateUserSchema = z.object({
   avatarUrl: z.string().url().optional()
 });
 
+// Authentication validation schemas
+export const RegisterSchema = z.object({
+  username: z.string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(50, 'Username must be at most 50 characters')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
+  email: z.string().email('Invalid email format'),
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(100, 'Password must be at most 100 characters'),
+  avatarUrl: z.string().url().optional()
+});
+
+export const LoginSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(1, 'Password is required')
+});
+
+export const RefreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required')
+});
+
 export const UpdateUserStatsSchema = z.object({
   totalGames: z.number().int().min(0),
   totalCorrect: z.number().int().min(0),
@@ -157,6 +179,9 @@ export const validateData = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
 
 // Type inference helpers
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
+export type RegisterInput = z.infer<typeof RegisterSchema>;
+export type LoginInput = z.infer<typeof LoginSchema>;
+export type RefreshTokenInput = z.infer<typeof RefreshTokenSchema>;
 export type UpdateUserStatsInput = z.infer<typeof UpdateUserStatsSchema>;
 export type CreateGameInput = z.infer<typeof CreateGameSchema>;
 export type CreateFlagInput = z.infer<typeof CreateFlagSchema>;

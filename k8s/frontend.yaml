@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: flag-guessing-game
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/your-username/flag-guessing-game-frontend:latest
+        ports:
+        - containerPort: 3500
+        envFrom:
+        - configMapRef:
+            name: flag-game-config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3500
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3500
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: flag-guessing-game
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 3500
+    targetPort: 3500
+  type: ClusterIP

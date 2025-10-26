@@ -2,6 +2,7 @@ import React from 'react';
 import { Question } from '../types';
 import ChoiceButton from './ChoiceButton';
 import Timer from './Timer';
+import CachedImage from './CachedImage';
 import './GameBoard.css';
 
 interface GameBoardProps {
@@ -30,10 +31,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
       </div>
       
       <div className="flag-container">
-        <img 
+        <CachedImage 
           src={question.correctCountry.imageUrl} 
           alt="Flag to identify"
           className="flag-image"
+          placeholder={
+            <div className="flag-loading-placeholder">
+              <div className="loading-spinner"></div>
+              <span>Loading flag...</span>
+            </div>
+          }
         />
       </div>
       

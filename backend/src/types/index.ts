@@ -9,9 +9,29 @@ export type TimeFrame = 'daily' | 'weekly' | 'alltime';
 export interface User {
   id: string;
   username: string;
+  email: string;
   avatarUrl?: string;
   createdAt: Date;
   stats: UserStats;
+}
+
+// Authentication interfaces
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthUser {
+  id: string;
+  username: string;
+  email: string;
+  avatarUrl?: string;
+}
+
+export interface JWTPayload {
+  userId: string;
+  username: string;
+  email: string;
 }
 
 export interface UserStats {
@@ -158,6 +178,8 @@ export interface ApiResponse<T = any> {
 export interface UserRow {
   id: string;
   username: string;
+  email: string;
+  password_hash: string;
   avatar_url?: string;
   created_at: Date;
   total_games: number;

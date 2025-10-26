@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flag-game-config
+  namespace: flag-guessing-game
+data:
+  NODE_ENV: "production"
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "flag_guessing_game"
+  REDIS_URL: "redis://redis-service:6379"
+  CDN_BASE_URL: "https://flagcdn.com/w320"
+  FRONTEND_URL: "https://flag-game.example.com"
+  VITE_API_URL: "https://api.flag-game.example.com/api"

@@ -23,9 +23,115 @@
 
 .selector-header p {
   font-size: 1.25rem;
-  margin: 0;
+  margin: 0 0 2rem 0;
   opacity: 0.9;
   font-weight: 300;
+}
+
+.auth-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.user-info,
+.guest-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.welcome-text,
+.guest-text {
+  font-weight: 500;
+  color: #333;
+  font-size: 1rem;
+}
+
+.user-actions,
+.auth-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-button,
+.logout-button,
+.login-button,
+.register-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profile-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.profile-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.logout-button {
+  background: transparent;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.logout-button:hover {
+  background: rgba(248, 249, 250, 0.8);
+  color: #333;
+}
+
+.login-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.register-button {
+  background: transparent;
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.5);
+}
+
+.register-button:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+}
+
+.profile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.profile-modal-overlay .user-profile-container {
+  background: none;
+  padding: 0;
+  min-height: auto;
 }
 
 .mode-grid {
@@ -165,6 +271,18 @@
   
   .selector-header p {
     font-size: 1rem;
+  }
+  
+  .user-info,
+  .guest-info {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .user-actions,
+  .auth-actions {
+    gap: 0.75rem;
   }
   
   .mode-grid {

@@ -3,6 +3,7 @@ import { Question, AnswerResult, Country } from '../types';
 import GameBoard from './GameBoard';
 import ScoreDisplay from './ScoreDisplay';
 import ResultFeedback from './ResultFeedback';
+import { usePreloadFlags } from '../hooks/usePreloadFlags';
 import './SinglePlayerGame.css';
 
 interface SinglePlayerGameProps {
@@ -37,6 +38,13 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ onBack }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<Country | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+
+  // Preload upcoming flags for better performance
+  usePreloadFlags(gameSession.currentQuestion || null, {
+    enabled: gameStarted && !gameSession.isGameOver,
+    preloadCount: 5,
+    preloadDelay: 2000 // Wait 2 seconds after question loads
+  });
 
   // Calculate choice count based on level (2^level pattern)
   const getChoiceCount = (level: number): number => {

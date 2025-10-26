@@ -12,6 +12,7 @@ export class UserModel {
     return {
       id: row.id,
       username: row.username,
+      email: row.email,
       avatarUrl: row.avatar_url,
       createdAt: row.created_at,
       stats: {
@@ -29,6 +30,7 @@ export class UserModel {
     return {
       id: user.id,
       username: user.username,
+      email: user.email,
       avatar_url: user.avatarUrl,
       created_at: user.createdAt,
       total_games: user.stats?.totalGames,
@@ -39,9 +41,10 @@ export class UserModel {
     };
   }
 
-  static createDefault(username: string): Omit<User, 'id' | 'createdAt'> {
+  static createDefault(username: string, email: string): Omit<User, 'id' | 'createdAt'> {
     return {
       username,
+      email,
       stats: {
         totalGames: 0,
         totalCorrect: 0,
